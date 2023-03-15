@@ -198,11 +198,18 @@
 
         <div class="container">
             <h1>Your room</h1>
+             {% if error%}
+                    <div class="alert alert-danger" role="alert">
+                        {{error}}
+                    </div>
+                    {% endif %}
         </div>
         <div class="room-list">
+
             <div class="room-item " id="search-room">
 
                 <form  method="POST" style="padding-top:30px">
+
                     <!-- username -->
                      {% csrf_token %}
                     <div class="form-group">
@@ -225,9 +232,11 @@
                     </div>
                 </form>
 
+
             </div>
             <div class="room-item " id="create-room">
                 <form  method="POST">
+
                       {% csrf_token %}
                     <!-- roomname -->
                     <div class="form-group" style="margin-bottom: 12px;">
@@ -266,7 +275,7 @@
                 />
                 <h2>{{room}}</h2>
                 <a href="#" onclick="joinRoom('{{room}}')">Join now</a>
-                <a  class="nav-link" href="" onclick="redirectToIndex()" role="button" data-bs-toggle="dropdown" aria-expanded="false" title="Delete this room?">✖</a>
+                <a  class="nav-link" href="" onclick="redirectToIndex('{{room.name}}')" role="button" data-bs-toggle="dropdown" aria-expanded="false" title="Delete this room?">✖</a>
             </div>
             {% endfor %}
 
@@ -323,10 +332,37 @@
         }
         });
 
-        redirectToIndex = function()
+        redirectToIndex = function(name)
         {
             if (confirm("Do you want to delete this room!")) {
+                 var form = document.createElement("form");
+        form.setAttribute("method", "POST");
 
+        // Thêm trường ẩn để xác định loại hoạt động là "xóa phòng"
+        var input = document.createElement("input");
+        input.setAttribute("type", "hidden");
+        input.setAttribute("name", "delete");
+        input.setAttribute("value", "delete");
+        form.appendChild(input);
+
+        // Thêm trường ẩn để chứa tên phòng
+        var input = document.createElement("input");
+        input.setAttribute("type", "hidden");
+        input.setAttribute("name", "roomname");
+        input.setAttribute("value", name);
+        form.appendChild(input);
+        var csrf_token = document.createElement("input");
+        csrf_token.setAttribute("type", "hidden");
+        csrf_token.setAttribute("name", "csrfmiddlewaretoken");
+        csrf_token.setAttribute("value", "{{ csrf_token }}");
+        form.appendChild(csrf_token);
+        // Thêm form vào trang web và gửi yêu cầu
+        var submit = document.createElement("input");
+        submit.setAttribute("type", "submit");
+        submit.setAttribute("name", "delete");
+        form.appendChild(submit);
+        document.body.appendChild(form);
+        form.submit();
             } else {
 
             }
